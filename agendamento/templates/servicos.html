@@ -3,11 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/style/style.css">
-    <title>Agendamento de Barbearia</title>
+    <title>Agendar Horário - Barbearia Estilo</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link href="../static/style/style.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Serviços</h1>
-     <a href="/">Voltar</a></p>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">💈 Barbearia <span>Estilo</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/servicos/">Agendar</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pagina-agendamento">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-7 col-lg-5">
+                    <div class="form-box">
+                        <span class="tag-topo">Reserve seu horário</span>
+                        <h2>Agende seu horário</h2>
+                        <p class="subtitulo">Preencha os dados abaixo e confirme sua vaga.</p>
+
+                        <form method="POST" action="/servicos/">
+
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Nome completo</label>
+                                <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite seu nome" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="telefone" class="form-label">Telefone / WhatsApp</label>
+                                <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="servico" class="form-label">Serviço</label>
+                                <select class="form-select" id="servico" name="servico" required>
+                                    <option value="corte">Corte de Cabelo</option>
+                                    <option value="barba">Barba</option>
+                                    <option value="combo">Combo Completo</option>
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label for="data" class="form-label">Data</label>
+                                    <input type="date" class="form-control" id="data" name="data" required>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="horario" class="form-label">Horário</label>
+                                    <input type="time" class="form-control" id="horario" name="horario" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-dourado w-100 py-2 mt-3">
+                                Confirmar Agendamento
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p class="mb-0">&copy; 2026 Barbearia Estilo — Todos os direitos reservados</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

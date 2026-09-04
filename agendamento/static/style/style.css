@@ -1,5 +1,291 @@
-h1 {
-    color: red;
+/* ===== RESET E BASE ===== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --dourado: #c9a227;
+    --dourado-claro: #e0b830;
+    --preto: #0d0d0d;
+    --preto-suave: #161616;
+    --cinza-card: #1e1e1e;
+    --cinza-borda: #2b2b2b;
+    --texto-claro: #f5f5f5;
+    --texto-secundario: #a8a8a8;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--preto);
+    color: var(--texto-claro);
+    line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+
+/* ===== NAVBAR ===== */
+
+.navbar {
+    background-color: rgba(13, 13, 13, 0.95) !important;
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--cinza-borda);
+    padding: 18px 0;
+}
+
+.navbar-brand {
+    color: var(--texto-claro) !important;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+.navbar-brand span {
+    color: var(--dourado);
+}
+
+.nav-link {
+    color: var(--texto-claro) !important;
+    font-weight: 500;
+    margin-left: 10px;
+    padding: 8px 18px !important;
+    border-radius: 6px;
+    transition: all 0.25s ease;
+}
+
+.nav-link:hover {
+    color: var(--preto) !important;
+    background-color: var(--dourado);
+}
+
+
+/* ===== BOTÃO PRINCIPAL ===== */
+
+.btn-dourado {
+    background: linear-gradient(135deg, var(--dourado-claro), var(--dourado));
+    border: none;
+    color: var(--preto);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(201, 162, 39, 0.25);
+}
+
+.btn-dourado:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(201, 162, 39, 0.4);
+    color: var(--preto);
+}
+
+
+/* ===== HERO ===== */
+
+.hero {
+    position: relative;
+    background: linear-gradient(180deg, rgba(13, 13, 13, 0.55) 0%, rgba(13, 13, 13, 0.85) 100%), url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1600&q=80');
+    background-size: cover;
+    background-position: center 30%;
+    padding: 160px 20px 140px;
     text-align: center;
-    margin-top: 50px;
+}
+
+.hero-badge {
+    display: inline-block;
+    color: var(--dourado);
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    font-weight: 600;
+}
+
+.hero h1 {
+    font-size: 3.2rem;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.hero p {
+    color: var(--texto-secundario);
+    font-size: 1.15rem;
+    max-width: 560px;
+    margin: 0 auto 40px;
+}
+
+
+/* ===== SEÇÃO DE SERVIÇOS ===== */
+
+.section-title {
+    text-align: center;
+    margin-bottom: 55px;
+}
+
+.section-title span.tag {
+    color: var(--dourado);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    font-weight: 600;
+}
+
+.section-title h2 {
+    font-size: 2.2rem;
+    margin-top: 8px;
+}
+
+.card-servico {
+    background-color: var(--cinza-card);
+    border: 1px solid var(--cinza-borda);
+    color: var(--texto-claro);
+    height: 100%;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.card-servico:hover {
+    transform: translateY(-8px);
+    border-color: var(--dourado);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+.card-servico .icone {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(201, 162, 39, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 18px;
+    color: var(--dourado);
+}
+
+.card-servico h5 {
+    color: var(--dourado);
+    margin-bottom: 10px;
+    font-size: 1.15rem;
+}
+
+.card-servico p {
+    color: var(--texto-secundario);
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+
+/* ===== FORMULÁRIO DE AGENDAMENTO ===== */
+
+.pagina-agendamento {
+    padding: 80px 0;
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+}
+
+.form-box {
+    background-color: var(--cinza-card);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 14px;
+    padding: 48px 40px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.form-box .tag-topo {
+    color: var(--dourado);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    font-weight: 600;
+    display: block;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.form-box h2 {
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 1.8rem;
+}
+
+.form-box .subtitulo {
+    text-align: center;
+    color: var(--texto-secundario);
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+}
+
+.form-label {
+    color: var(--texto-secundario);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.form-control,
+.form-select {
+    background-color: var(--preto-suave);
+    color: var(--texto-claro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.95rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--preto-suave);
+    color: var(--texto-claro);
+    border-color: var(--dourado);
+    box-shadow: 0 0 0 0.2rem rgba(201, 162, 39, 0.2);
+}
+
+.form-control::placeholder {
+    color: #666;
+}
+
+.form-select option {
+    background-color: var(--preto-suave);
+}
+
+
+/* ===== FOOTER ===== */
+
+footer {
+    background-color: var(--preto-suave);
+    color: var(--texto-secundario);
+    padding: 28px 0;
+    border-top: 1px solid var(--cinza-borda);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+
+/* ===== RESPONSIVO ===== */
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 110px 20px 90px;
+    }
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+    .form-box {
+        padding: 32px 24px;
+    }
 }
