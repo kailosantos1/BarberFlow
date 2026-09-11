@@ -25,7 +25,7 @@
                         <a class="nav-link" href="/">Início</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/servicos/">Agendar</a>
+                        <a class="nav-link" href="/agendamentos/">Agendar</a>
                     </li>
                 </ul>
             </div>
@@ -41,7 +41,8 @@
                         <h2>Agende seu horário</h2>
                         <p class="subtitulo">Preencha os dados abaixo e confirme sua vaga.</p>
 
-                        <form method="POST" action="/servicos/">
+                        <form method="POST" action="/agendamentos/">
+                            {% csrf_token %}
 
                             <div class="mb-3">
                                 <label for="nome" class="form-label">Nome completo</label>
@@ -88,5 +89,27 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% if messages %}
+<div class="modal fade" id="modalConfirmacao" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border-0">
+            <div class="modal-body text-center p-4">
+                <div class="mb-3" style="font-size: 3rem;">✅</div>
+                {% for message in messages %}
+                    <h5>{{ message }}</h5>
+                {% endfor %}
+                <button type="button" class="btn btn-dourado mt-3 px-4" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        var modal = new bootstrap.Modal(document.getElementById('modalConfirmacao'));
+        modal.show();
+    });
+</script>
+{% endif %}
 </body>
 </html>
