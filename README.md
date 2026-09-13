@@ -11,7 +11,7 @@ O **BarberFlow** é uma plataforma completa desenvolvida em **Django** para simp
 - **Histórico de Agendamentos:** Visualização de agendamentos passados e futuros.
 - **Perfil do Cliente:** Cadastro e atualização de dados pessoais.
 
-### 💈 Área Administrativa / Barbeiro
+### 💈 Área Administrativa
 - **Painel de Controle (Dashboard):** Visão geral do fluxo de atendimento diário e semanal.
 - **Gestão de Serviços:** Cadastro de cortes, barba, tratamentos, preços e duração.
 - **Gestão de Profissionais:** Cadastro de barbeiros e definição de horários de trabalho.
