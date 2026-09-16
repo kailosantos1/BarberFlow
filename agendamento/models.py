@@ -10,14 +10,15 @@ class Agendamento(models.Model):
         ('combo', 'Combo Completo'),
     ]
     
-    idagendamento = models.BigAutoField('Identificador', primary_key=True)
-    cliente = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Cliente')
-    servico = models.CharField('Servico', max_length=10, choices=SERVICO_CHOICES)
-    data_agendamento = models.DateField('Data do Agendamento')
-    horario = models.TimeField('Horario Agendamento')
+    cliente = models.ForeignKey(User, on_delete=models.CASCADE, related_name='agendamentos_cliente')
+    barbeiro = models.ForeignKey(User, on_delete=models.CASCADE, related_name='agendamentos_barbeiro', limit_choices_to={'perfil__tipo': 'barbeiro'})
+    servico = models.CharField(max_length=10, choices=SERVICO_CHOICES)
+    data = models.DateField()
+    horario = models.TimeField()
+    criado_em = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return f'{self.cliente.username} - {self.data_agendamento} {self.horario}'
+        return f'{self.cliente.username} - {self.barbeiro} {self.data}'
     
 class Cliente(models.Model):
     SEXO_CHOICES=[
@@ -34,5 +35,18 @@ class Cliente(models.Model):
     
     def __str__(self):
         return self.user.username
+    
+class Perfil(models.Model):
+    TIPO_CHOICES = [
+        ('cliente', 'Cliente'),
+        ('barbeiro', 'Barbeiro'),
+        ('gerente', 'Gerente'),
+    ]
+    
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE,related_name='perfil')
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES, default='cliente')
+    
+    def __str__(self):
+        return f"{self.usuario.username} ({self.tipo})"
      
     

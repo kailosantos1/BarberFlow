@@ -3,8 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from agendamento.models import Agendamento, Cliente
+from .models import Perfil, Cliente, Agendamento
 
 # Create your views here.
 
@@ -29,6 +28,7 @@ def cadastro(request):
             first_name = nome
         )
         
+        Perfil.objects.create(usuario=user, tipo='cliente')
         
         Cliente.objects.create(
             user = user,
