@@ -14,7 +14,7 @@ def cadastro(request):
         telefone = request.POST.get('telefone')
         data_nascimento = request.POST.get('data_nascimento')
         sexo = request.POST.get('sexo')
-        username = request.POST.get('username')
+        username = request.POST.get('username')d
         senha = request.POST.get('senha')
         
         if User.objects.filter(username=username).exists():
