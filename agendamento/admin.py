@@ -1,12 +1,17 @@
 from django.contrib import admin
-from agendamento.models import *
+from django.contrib.auth.admin import UserAdmin
+from .models import Usuario, Agendamento
+
+
+class UsuarioAdmin(UserAdmin):
+    list_display = ('username', 'first_name', 'tipo', 'email')
+    fieldsets = UserAdmin.fieldsets + (
+        ('Informações Extras', {'fields': ('tipo', 'telefone', 'data_nascimento', 'sexo')}),
+    )
+
+admin.site.register(Usuario, UsuarioAdmin)
+
 
 @admin.register(Agendamento)
 class AgendamentoAdmin(admin.ModelAdmin):
-    list_display = ('idagendamento', 'cliente', 'servico', 'data_agendamento', 'horario')
-
-#    list_display = ('idagendamento','data_agendamento','horario','observacao','email','valor')
-
-@admin.register(Cliente)
-class ClienteAdmin(admin.ModelAdmin):
-    list_display = ('user', 'telefone', 'data_nascimento', 'sexo')
+    list_display = ('id', 'cliente', 'barbeiro', 'servico', 'data', 'horario')

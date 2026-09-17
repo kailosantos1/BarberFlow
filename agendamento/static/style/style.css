@@ -509,3 +509,78 @@ footer {
 .form-box.tilt:hover {
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55), 0 0 40px rgba(201, 162, 39, 0.12);
 }
+
+
+/* ===== TABELAS (painel barbeiro / gerenciar barbeiros) ===== */
+
+.tabela-box {
+    background-color: var(--cinza-card);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.table-dark {
+    --bs-table-bg: transparent;
+    color: var(--texto-claro);
+}
+
+.table-dark th {
+    color: var(--dourado);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--cinza-borda);
+    padding-bottom: 14px;
+}
+
+.table-dark td {
+    border-bottom: 1px solid var(--cinza-borda);
+    padding: 14px 8px;
+    color: var(--texto-secundario);
+}
+
+.table-dark tr:last-child td {
+    border-bottom: none;
+}
+
+.badge-servico {
+    background: rgba(201, 162, 39, 0.15);
+    color: var(--dourado);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.btn-excluir {
+    background: transparent;
+    border: 1px solid #b03a3a;
+    color: #e07777;
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.btn-excluir:hover {
+    background: #b03a3a;
+    color: #fff;
+}
+
+
+/* ===== NÚMEROS DE DESTAQUE (dashboard) ===== */
+
+.numero-dashboard {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--texto-claro);
+    margin: 0;
+}
+
+.section-title.text-start {
+    text-align: left;
+    margin-bottom: 35px;
+}
