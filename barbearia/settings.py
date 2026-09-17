@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'agendamento.middleware.EmpresaMiddleware',
 ]
 
 ROOT_URLCONF = 'barbearia.urls'
@@ -62,6 +63,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'agendamento.context_processors.empresa_atual',
             ],
         },
     },
@@ -138,3 +140,4 @@ LOGIN_REDIRECT_URL = 'agendamentos'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'agendamento.Usuario'
+

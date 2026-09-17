@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agendar Horário - BarberFlow</title>
+    <title>Agendar Horário - {{ empresa.nome|default:"BarberFlow" }}</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
 
 <nav class="navbar navbar-expand-lg">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="/">💈 Barber<span>Flow</span></a>
+        <a class="navbar-brand fw-bold" href="{% url 'index' slug=empresa.slug %}">💈 {{ empresa.nome|default:"BarberFlow" }}</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -25,10 +25,10 @@
                     <span class="nav-link">Olá, {{ request.user.first_name|default:request.user.username }}</span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'agendamentos' %}">Agendar</a>
+                    <a class="nav-link" href="{% url 'agendamentos' slug=empresa.slug %}">Agendar</a>
                 </li>
                 <li class="nav-item">
-                    <form method="POST" action="{% url 'logout' %}" class="d-inline">
+                    <form method="POST" action="{% url 'logout' slug=empresa.slug %}" class="d-inline">
                         {% csrf_token %}
                         <button type="submit" class="nav-link">Sair</button>
                     </form>
@@ -55,7 +55,7 @@
                     <h2>Agende seu horário</h2>
                     <p class="subtitulo">Escolha o barbeiro, o serviço e o melhor horário pra você.</p>
 
-                    <form method="POST" id="formAgendamento">
+                    <form method="POST" action="{% url 'agendamentos' slug=empresa.slug %}" id="formAgendamento">
                         {% csrf_token %}
 
                         <div class="mb-3">
@@ -109,43 +109,43 @@
         <div class="tabela-box">
             <table class="table table-dark table-borderless align-middle mb-0">
                 <thead>
-    <tr>
-        <th>Barbeiro</th>
-        <th>Serviço</th>
-        <th>Data</th>
-        <th>Horário</th>
-        <th class="text-end">Valor</th>
-        <th class="text-end">Ação</th>
-    </tr>
-</thead>
-<tbody>
-    {% for ag in meus_agendamentos %}
-    <tr>
-        <td>{{ ag.barbeiro.first_name|default:ag.barbeiro.username }}</td>
-        <td><span class="badge-servico">{{ ag.get_servico_display }}</span></td>
-        <td>{{ ag.data|date:"d/m/Y" }}</td>
-        <td>{{ ag.horario|time:"H:i" }}</td>
-        <td class="text-end">R$ {{ ag.preco|stringformat:".2f" }}</td>
-        <td class="text-end">
-            <a href="{% url 'excluir_agendamento' ag.id %}"
-               class="btn btn-sm btn-excluir"
-               onclick="return confirm('Cancelar este agendamento?');">
-                Cancelar
-            </a>
-        </td>
-    </tr>
-    {% empty %}
-    <tr>
-        <td colspan="6" class="text-center py-4 text-secondary">Você ainda não tem agendamentos.</td>
-    </tr>
-    {% endfor %}
-</tbody>
+                    <tr>
+                        <th>Barbeiro</th>
+                        <th>Serviço</th>
+                        <th>Data</th>
+                        <th>Horário</th>
+                        <th class="text-end">Valor</th>
+                        <th class="text-end">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ag in meus_agendamentos %}
+                    <tr>
+                        <td>{{ ag.barbeiro.first_name|default:ag.barbeiro.username }}</td>
+                        <td><span class="badge-servico">{{ ag.get_servico_display }}</span></td>
+                        <td>{{ ag.data|date:"d/m/Y" }}</td>
+                        <td>{{ ag.horario|time:"H:i" }}</td>
+                        <td class="text-end">R$ {{ ag.preco|stringformat:".2f" }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'excluir_agendamento' slug=empresa.slug id=ag.id %}"
+                               class="btn btn-sm btn-excluir"
+                               onclick="return confirm('Cancelar este agendamento?');">
+                                Cancelar
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-secondary">Você ainda não tem agendamentos.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>
 
     <footer>
-        <p class="mb-0">&copy; 2026 BarberFlow — Todos os direitos reservados</p>
+        <p class="mb-0">&copy; 2026 {{ empresa.nome|default:"BarberFlow" }} — Todos os direitos reservados</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -158,11 +158,11 @@
         const selectServico = document.getElementById('servico');
         const precoSelecionado = document.getElementById('precoSelecionado');
 
-        // Impede escolher data no passado
         const hoje = new Date().toISOString().split('T')[0];
         inputData.setAttribute('min', hoje);
 
         function atualizarPreco() {
+            if (selectServico.selectedIndex === -1) return;
             const opt = selectServico.options[selectServico.selectedIndex];
             const preco = opt.getAttribute('data-preco');
             precoSelecionado.textContent = preco ? `R$ ${parseFloat(preco).toFixed(2)}` : '-';
@@ -181,7 +181,7 @@
                 return;
             }
 
-            fetch(`/horarios-disponiveis/?barbeiro=${barbeiroId}&data=${data}`)
+            fetch(`{% url 'horarios_disponiveis' slug=empresa.slug %}?barbeiro=${barbeiroId}&data=${data}`)
                 .then(response => response.json())
                 .then(dados => {
                     selectHorario.innerHTML = '';

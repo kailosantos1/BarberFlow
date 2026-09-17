@@ -7,8 +7,8 @@ from .models import Usuario, Agendamento
 from .decorators import somente_tipo
 
 
-HORARIO_INICIO = 8   # 08:00
-HORARIO_FIM = 22     # 22:00
+HORARIO_INICIO = 8
+HORARIO_FIM = 22
 INTERVALO_MINUTOS = 30
 
 
@@ -22,11 +22,11 @@ def gerar_horarios():
     return horarios
 
 
-def index(request):
+def index(request, slug):
     return render(request, 'index.html')
 
 
-def cadastro(request):
+def cadastro(request, slug):
     if request.method == 'POST':
         nome = request.POST.get('nome')
         email = request.POST.get('email')
@@ -48,15 +48,16 @@ def cadastro(request):
             data_nascimento=data_nascimento or None,
             sexo=sexo,
             tipo='cliente'
+            # repara: cliente NÃO recebe empresa fixa, ele é "global" na plataforma
         )
 
         auth_login(request, user)
-        return redirect('agendamentos')
+        return redirect('agendamentos', slug=slug)
 
     return render(request, 'cadastro.html')
 
 
-def login_view(request):
+def login_view(request, slug):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -66,25 +67,26 @@ def login_view(request):
             auth_login(request, user)
 
             if user.tipo == 'gerente':
-                return redirect('dashboard_gerente')
+                return redirect('dashboard_gerente', slug=slug)
             elif user.tipo == 'barbeiro':
-                return redirect('painel_barbeiro')
+                return redirect('painel_barbeiro', slug=slug)
             else:
-                return redirect('agendamentos')
+                return redirect('agendamentos', slug=slug)
         else:
             return render(request, 'login.html', {'erro': 'Usuário ou senha inválidos.'})
 
     return render(request, 'login.html')
 
 
-def logout_view(request):
+def logout_view(request, slug):
     logout(request)
-    return redirect('index')
+    return redirect('index', slug=slug)
 
 
 @somente_tipo('cliente')
-def agendamentos(request):
-    barbeiros = Usuario.objects.filter(tipo='barbeiro')
+def agendamentos(request, slug):
+    empresa = request.empresa
+    barbeiros = Usuario.objects.filter(tipo='barbeiro', empresa=empresa)
 
     if request.method == 'POST':
         barbeiro_id = request.POST.get('barbeiro')
@@ -94,14 +96,21 @@ def agendamentos(request):
 
         if not barbeiro_id or not horario:
             messages.error(request, 'Escolha o barbeiro e o horário.')
-            return redirect('agendamentos')
+            return redirect('agendamentos', slug=slug)
+
+        # Garante que o barbeiro escolhido pertence mesmo a essa empresa
+        barbeiro_valido = Usuario.objects.filter(id=barbeiro_id, tipo='barbeiro', empresa=empresa).exists()
+        if not barbeiro_valido:
+            messages.error(request, 'Barbeiro inválido.')
+            return redirect('agendamentos', slug=slug)
 
         ja_existe = Agendamento.objects.filter(barbeiro_id=barbeiro_id, data=data, horario=horario).exists()
         if ja_existe:
-            messages.error(request, 'Esse horário acabou de ser reservado por outra pessoa. Escolha outro.')
-            return redirect('agendamentos')
+            messages.error(request, 'Esse horário acabou de ser reservado. Escolha outro.')
+            return redirect('agendamentos', slug=slug)
 
         Agendamento.objects.create(
+            empresa=empresa,
             cliente=request.user,
             barbeiro_id=barbeiro_id,
             servico=servico,
@@ -109,9 +118,9 @@ def agendamentos(request):
             horario=horario,
         )
         messages.success(request, 'Agendamento realizado com sucesso!')
-        return redirect('agendamentos')
+        return redirect('agendamentos', slug=slug)
 
-    meus_agendamentos = Agendamento.objects.filter(cliente=request.user).order_by('data', 'horario')
+    meus_agendamentos = Agendamento.objects.filter(cliente=request.user, empresa=empresa).order_by('data', 'horario')
 
     return render(request, 'agendamentos.html', {
         'barbeiros': barbeiros,
@@ -120,10 +129,17 @@ def agendamentos(request):
     })
 
 
-def horarios_disponiveis(request):
+@somente_tipo('cliente')
+def excluir_agendamento(request, slug, id):
+    agendamento = Agendamento.objects.get(id=id, cliente=request.user, empresa=request.empresa)
+    agendamento.delete()
+    messages.success(request, 'Agendamento cancelado com sucesso.')
+    return redirect('agendamentos', slug=slug)
+
+
+def horarios_disponiveis(request, slug):
     barbeiro_id = request.GET.get('barbeiro')
     data = request.GET.get('data')
-
     todos = gerar_horarios()
 
     if not barbeiro_id or not data:
@@ -131,30 +147,65 @@ def horarios_disponiveis(request):
 
     ocupados = Agendamento.objects.filter(barbeiro_id=barbeiro_id, data=data).values_list('horario', flat=True)
     ocupados_str = [h.strftime('%H:%M') for h in ocupados]
-
     livres = [h for h in todos if h not in ocupados_str]
     return JsonResponse({'horarios': livres})
 
 
 @somente_tipo('barbeiro')
-def painel_barbeiro(request):
-    meus_agendamentos = Agendamento.objects.filter(barbeiro=request.user).order_by('data', 'horario')
+def painel_barbeiro(request, slug):
+    meus_agendamentos = Agendamento.objects.filter(barbeiro=request.user, empresa=request.empresa).order_by('data', 'horario')
     return render(request, 'painel_barbeiro.html', {'agendamentos': meus_agendamentos})
 
 
+@somente_tipo('barbeiro')
+def concluir_agendamento(request, slug, id):
+    agendamento = Agendamento.objects.get(id=id, barbeiro=request.user, empresa=request.empresa)
+    agendamento.status = 'concluido'
+    agendamento.save()
+    messages.success(request, 'Atendimento marcado como concluído!')
+    return redirect('painel_barbeiro', slug=slug)
+
+
 @somente_tipo('gerente')
-def dashboard_gerente(request):
-    total_agendamentos = Agendamento.objects.count()
-    barbeiros = Usuario.objects.filter(tipo='barbeiro')
+def dashboard_gerente(request, slug):
+    empresa = request.empresa
+    filtro_status = request.GET.get('status', 'todos')
+
+    agendamentos = Agendamento.objects.filter(empresa=empresa).select_related('cliente', 'barbeiro').order_by('-data', '-horario')
+    if filtro_status == 'pendente':
+        agendamentos = agendamentos.filter(status='pendente')
+    elif filtro_status == 'concluido':
+        agendamentos = agendamentos.filter(status='concluido')
+
+    total_pendentes = Agendamento.objects.filter(empresa=empresa, status='pendente').count()
+    total_concluidos = Agendamento.objects.filter(empresa=empresa, status='concluido').count()
+    barbeiros = Usuario.objects.filter(tipo='barbeiro', empresa=empresa)
+
+    resumo_barbeiros = []
+    for b in barbeiros:
+        ags_b = Agendamento.objects.filter(barbeiro=b, empresa=empresa)
+        concluidos_b = ags_b.filter(status='concluido')
+        resumo_barbeiros.append({
+            'nome': b.first_name or b.username,
+            'pendentes': ags_b.filter(status='pendente').count(),
+            'concluidos': concluidos_b.count(),
+            'receita': sum(ag.preco for ag in concluidos_b),
+        })
+
     return render(request, 'dashboard_gerente.html', {
-        'total_agendamentos': total_agendamentos,
+        'agendamentos': agendamentos,
+        'total_pendentes': total_pendentes,
+        'total_concluidos': total_concluidos,
+        'resumo_barbeiros': resumo_barbeiros,
+        'filtro_status': filtro_status,
         'barbeiros': barbeiros,
     })
 
 
 @somente_tipo('gerente')
-def gerenciar_barbeiros(request):
-    barbeiros = Usuario.objects.filter(tipo='barbeiro')
+def gerenciar_barbeiros(request, slug):
+    empresa = request.empresa
+    barbeiros = Usuario.objects.filter(tipo='barbeiro', empresa=empresa)
 
     if request.method == 'POST':
         nome = request.POST.get('nome')
@@ -163,41 +214,34 @@ def gerenciar_barbeiros(request):
 
         if Usuario.objects.filter(username=username).exists():
             messages.error(request, 'Esse usuário já existe.')
-            return redirect('gerenciar_barbeiros')
+            return redirect('gerenciar_barbeiros', slug=slug)
 
-        Usuario.objects.create_user(username=username, password=senha, first_name=nome, tipo='barbeiro')
-
+        Usuario.objects.create_user(username=username, password=senha, first_name=nome, tipo='barbeiro', empresa=empresa)
         messages.success(request, 'Barbeiro adicionado!')
-        return redirect('gerenciar_barbeiros')
+        return redirect('gerenciar_barbeiros', slug=slug)
 
     return render(request, 'gerenciar_barbeiros.html', {'barbeiros': barbeiros})
 
 
 @somente_tipo('gerente')
-def excluir_barbeiro(request, id):
-    barbeiro = Usuario.objects.get(id=id, tipo='barbeiro')
+def excluir_barbeiro(request, slug, id):
+    barbeiro = Usuario.objects.get(id=id, tipo='barbeiro', empresa=request.empresa)
     barbeiro.delete()
     messages.success(request, 'Barbeiro removido.')
-    return redirect('gerenciar_barbeiros')
+    return redirect('gerenciar_barbeiros', slug=slug)
 
 
 @somente_tipo('gerente')
-def financas(request):
-    agendamentos = Agendamento.objects.select_related('cliente', 'barbeiro').order_by('-data')
-    total_agendamentos = agendamentos.count()
-    receita_total = sum(ag.preco for ag in agendamentos)
-    ticket_medio = receita_total / total_agendamentos if total_agendamentos > 0 else 0
+def financas(request, slug):
+    empresa = request.empresa
+    concluidos = Agendamento.objects.filter(empresa=empresa, status='concluido').select_related('cliente', 'barbeiro').order_by('-data')
+    total = concluidos.count()
+    receita_total = sum(ag.preco for ag in concluidos)
+    ticket_medio = receita_total / total if total > 0 else 0
 
     return render(request, 'financas.html', {
-        'agendamentos': agendamentos,
-        'total_agendamentos': total_agendamentos,
+        'agendamentos': concluidos,
+        'total_agendamentos': total,
         'receita_total': receita_total,
         'ticket_medio': ticket_medio,
     })
-    
-@somente_tipo('cliente')
-def excluir_agendamento(request, id):
-    agendamento = Agendamento.objects.get(id=id, cliente=request.user)
-    agendamento.delete()
-    messages.success(request, 'Agendamento cancelado com sucesso.')
-    return redirect('agendamentos')

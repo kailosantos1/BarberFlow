@@ -584,3 +584,36 @@ footer {
     text-align: left;
     margin-bottom: 35px;
 }
+
+
+/* ===== BADGES DE STATUS ===== */
+
+.badge-pendente {
+    background: rgba(224, 184, 48, 0.15);
+    color: var(--dourado-claro);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.badge-concluido {
+    background: rgba(60, 179, 113, 0.15);
+    color: #4caf7d;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.btn-filtro {
+    background: transparent;
+    border: 1px solid var(--cinza-borda);
+    color: var(--texto-secundario);
+    transition: all 0.2s ease;
+}
+
+.btn-filtro:hover {
+    border-color: var(--dourado);
+    color: var(--dourado);
+}
