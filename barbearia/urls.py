@@ -37,4 +37,5 @@ urlpatterns = [
     path('dashboard/barbeiros/', views.gerenciar_barbeiros, name='gerenciar_barbeiros'),
     path('dashboard/barbeiros/excluir/<int:id>/', views.excluir_barbeiro, name='excluir_barbeiro'),
     path('dashboard/financas/', views.financas, name='financas'),
+    path('agendamentos/excluir/<int:id>/', views.excluir_agendamento, name='excluir_agendamento'),
 ]

@@ -30,7 +30,7 @@
                 <li class="nav-item">
                     <form method="POST" action="{% url 'logout' %}" class="d-inline">
                         {% csrf_token %}
-                        <button type="submit" class="nav-link btn btn-link" style="border: none; background: none;">Sair</button>
+                        <button type="submit" class="nav-link">Sair</button>
                     </form>
                 </li>
             </ul>
@@ -109,29 +109,37 @@
         <div class="tabela-box">
             <table class="table table-dark table-borderless align-middle mb-0">
                 <thead>
-                    <tr>
-                        <th>Barbeiro</th>
-                        <th>Serviço</th>
-                        <th>Data</th>
-                        <th>Horário</th>
-                        <th class="text-end">Valor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for ag in meus_agendamentos %}
-                    <tr>
-                        <td>{{ ag.barbeiro.first_name|default:ag.barbeiro.username }}</td>
-                        <td><span class="badge-servico">{{ ag.get_servico_display }}</span></td>
-                        <td>{{ ag.data|date:"d/m/Y" }}</td>
-                        <td>{{ ag.horario|time:"H:i" }}</td>
-                        <td class="text-end">R$ {{ ag.preco|stringformat:".2f" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center py-4 text-secondary">Você ainda não tem agendamentos.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
+    <tr>
+        <th>Barbeiro</th>
+        <th>Serviço</th>
+        <th>Data</th>
+        <th>Horário</th>
+        <th class="text-end">Valor</th>
+        <th class="text-end">Ação</th>
+    </tr>
+</thead>
+<tbody>
+    {% for ag in meus_agendamentos %}
+    <tr>
+        <td>{{ ag.barbeiro.first_name|default:ag.barbeiro.username }}</td>
+        <td><span class="badge-servico">{{ ag.get_servico_display }}</span></td>
+        <td>{{ ag.data|date:"d/m/Y" }}</td>
+        <td>{{ ag.horario|time:"H:i" }}</td>
+        <td class="text-end">R$ {{ ag.preco|stringformat:".2f" }}</td>
+        <td class="text-end">
+            <a href="{% url 'excluir_agendamento' ag.id %}"
+               class="btn btn-sm btn-excluir"
+               onclick="return confirm('Cancelar este agendamento?');">
+                Cancelar
+            </a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6" class="text-center py-4 text-secondary">Você ainda não tem agendamentos.</td>
+    </tr>
+    {% endfor %}
+</tbody>
             </table>
         </div>
     </div>

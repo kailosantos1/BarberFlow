@@ -194,3 +194,10 @@ def financas(request):
         'receita_total': receita_total,
         'ticket_medio': ticket_medio,
     })
+    
+@somente_tipo('cliente')
+def excluir_agendamento(request, id):
+    agendamento = Agendamento.objects.get(id=id, cliente=request.user)
+    agendamento.delete()
+    messages.success(request, 'Agendamento cancelado com sucesso.')
+    return redirect('agendamentos')
