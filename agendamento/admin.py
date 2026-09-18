@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Usuario, Agendamento, Empresa
+from .models import Usuario, Agendamento, Empresa, Lead
 
 
 @admin.register(Empresa)
@@ -24,3 +24,8 @@ admin.site.register(Usuario, UsuarioAdmin)
 class AgendamentoAdmin(admin.ModelAdmin):
     list_display = ('id', 'empresa', 'cliente', 'barbeiro', 'servico', 'status', 'data', 'horario')
     list_filter = ('empresa', 'status', 'servico')
+        
+@admin.register(Lead)
+class LeadAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'email', 'telefone', 'nome_barbearia', 'criado_em')
+    list_filter = ('criado_em',)

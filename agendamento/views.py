@@ -3,14 +3,40 @@ from django.contrib import messages
 from django.contrib.auth import login as auth_login, authenticate, logout
 from django.http import JsonResponse
 from datetime import datetime, timedelta
-from .models import Usuario, Agendamento
+from .models import Usuario, Agendamento, Empresa, Lead
 from .decorators import somente_tipo
-
 
 HORARIO_INICIO = 8
 HORARIO_FIM = 22
 INTERVALO_MINUTOS = 30
 
+def landing(request):
+    if request.method == 'POST':
+        Lead.objects.create(
+            nome=request.POST.get('nome'),
+            email=request.POST.get('email'),
+            telefone=request.POST.get('telefone'),
+            nome_barbearia=request.POST.get('nome_barbearia'),
+            mensagem=request.POST.get('mensagem'),
+        )
+        messages.success(request, 'Recebemos sua mensagem! Em breve entraremos em contato.')
+        return redirect('landing')
+
+    return render(request, 'landing.html')
+
+
+def acessar_barbearia(request):
+    slug_digitado = request.GET.get('slug', '').strip().lower().replace(' ', '-')
+
+    if not slug_digitado:
+        messages.error(request, 'Digite o código da sua barbearia.')
+        return redirect('landing')
+
+    if not Empresa.objects.filter(slug=slug_digitado).exists():
+        messages.error(request, 'Barbearia não encontrada. Confira o código.')
+        return redirect('landing')
+
+    return redirect('login', slug=slug_digitado)
 
 def gerar_horarios():
     horarios = []

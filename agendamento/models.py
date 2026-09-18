@@ -49,6 +49,16 @@ class Usuario(AbstractUser):
     def __str__(self):
         return f"{self.username} ({self.tipo})"
 
+class Lead(models.Model):
+    nome = models.CharField(max_length=100)
+    email = models.EmailField()
+    telefone = models.CharField(max_length=20, blank=True)
+    nome_barbearia = models.CharField(max_length=100, blank=True)
+    mensagem = models.TextField(blank=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.nome} - {self.email}'
 
 class Agendamento(models.Model):
     SERVICO_CHOICES = [

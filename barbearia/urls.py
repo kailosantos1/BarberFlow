@@ -20,6 +20,12 @@ from agendamento import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    path('', views.landing, name='landing'),
+    path('acessar/', views.acessar_barbearia, name='acessar_barbearia'),
+
+    path('<slug:slug>/', views.index, name='index'),
+    path('<slug:slug>/login/', views.login_view, name='login'),
 
     path('<slug:slug>/', views.index, name='index'),
     path('<slug:slug>/login/', views.login_view, name='login'),
